@@ -57,37 +57,44 @@ _✨ Access all LLM through the standard OpenAI API format, easy to deploy & use
 > **Note**: The latest image pulled from Docker may be an `alpha` release. Specify the version manually if you require stability.
 
 ## Features
-1. Supports multiple API access channels:
-    + [x] Official OpenAI channel (support proxy configuration)
-    + [x] **Azure OpenAI API**
-    + [x] [API Distribute](https://api.gptjk.top/register?aff=QGxj)
-    + [x] [OpenAI-SB](https://openai-sb.com)
-    + [x] [API2D](https://api2d.com/r/197971)
-    + [x] [OhMyGPT](https://aigptx.top?aff=uFpUl2Kf)
-    + [x] [AI Proxy](https://aiproxy.io/?i=OneAPI) (invitation code: `OneAPI`)
-    + [x] Custom channel: Various third-party proxy services not included in the list
-2. Supports access to multiple channels through **load balancing**.
-3. Supports **stream mode** that enables typewriter-like effect through stream transmission.
-4. Supports **multi-machine deployment**. [See here](#multi-machine-deployment) for more details.
-5. Supports **token management** that allows setting token expiration time and usage count.
-6. Supports **voucher management** that enables batch generation and export of vouchers. Vouchers can be used for account balance replenishment.
-7. Supports **channel management** that allows bulk creation of channels.
-8. Supports **user grouping** and **channel grouping** for setting different rates for different groups.
-9. Supports channel **model list configuration**.
-10. Supports **quota details checking**.
-11. Supports **user invite rewards**.
-12. Allows display of balance in USD.
-13. Supports announcement publishing, recharge link setting, and initial balance setting for new users.
-14. Offers rich **customization** options:
-    1. Supports customization of system name, logo, and footer.
-    2. Supports customization of homepage and about page using HTML & Markdown code, or embedding a standalone webpage through iframe.
-15. Supports management API access through system access tokens.
-16. Supports Cloudflare Turnstile user verification.
-17. Supports user management and multiple user login/registration methods:
-    + Email login/registration and password reset via email.
+1. Support for multiple large models:
+   + [x] [OpenAI ChatGPT series models](https://platform.openai.com/docs/guides/gpt/chat-completions-api) (supports [Azure OpenAI API](https://learn.microsoft.com/en-us/azure/ai-services/openai/reference))
+   + [x] [Anthropic Claude series models](https://anthropic.com)
+   + [x] [Google PaLM2 series models](https://developers.generativeai.google)
+   + [x] [Baidu Wenxin Yiyuan series models](https://cloud.baidu.com/doc/WENXINWORKSHOP/index.html)
+   + [x] [Zhipu ChatGLM series models](https://bigmodel.cn)
+2. Support for configuring mirrors and numerous third-party proxy services:
+   + [x] [API Distribute](https://api.gptjk.top/register?aff=QGxj)
+   + [x] [OpenAI-SB](https://openai-sb.com)
+   + [x] [API2D](https://api2d.com/r/197971)
+   + [x] [OhMyGPT](https://aigptx.top?aff=uFpUl2Kf)
+   + [x] [AI Proxy](https://aiproxy.io/?i=OneAPI) (Invitation code: `OneAPI`)
+   + [x] [CloseAI](https://console.closeai-asia.com/r/2412)
+   + [x] Custom channels: For example, various third-party proxy services not included in the list
+3. Support accessing multiple channels through **load balancing**.
+4. Support **stream mode**, which enables typewriter-like effect through streaming.
+5. Support **multi-machine deployment**, see details at [#Multi-Machine Deployment].
+6. Support **token management**, setting token expiration time and limits.
+7. Support **redeem code management**, including batch generation and export of redeem codes, which can be used to recharge accounts.
+8. Support **channel management**, allowing batch creation of channels.
+9. Support **user grouping** and **channel grouping**, enabling different rates for different groups.
+10. Support channel **model list configuration**.
+11. Support viewing quota details.
+12. Support user invitation rewards.
+13. Display quotas in US dollars.
+14. Ability to publish announcements, set recharge links, and set initial quotas for new users.
+15. Model mapping support, redirecting user requests to specific models.
+16. Automatic retry on failure support.
+17. Plotting interface support.
+18. Rich **customization** options:
+    1. Custom system name, logo, and footer support.
+    2. Custom homepage and about page with the option to use HTML & Markdown code for customization or embed a separate webpage using an iframe tag.
+19. Access management API using system access tokens.
+20. Cloudflare Turnstile user verification support.
+21. User management support with multiple login/register methods:
+    + Email login/register and password reset via email.
     + [GitHub OAuth](https://github.com/settings/applications/new).
     + WeChat Official Account authorization (requires additional deployment of [WeChat Server](https://github.com/songquanpeng/wechat-server)).
-18. Immediate support and encapsulation of other major model APIs as they become available.
 
 ## Deployment
 ### Docker Deployment
@@ -262,22 +269,25 @@ If the channel ID is not provided, load balancing will be used to distribute the
 ![token](https://user-images.githubusercontent.com/39998050/233837971-dab488b7-6d96-43af-b640-a168e8d1c9bf.png)
 
 ## FAQ
-1. What is quota? How is it calculated? Does One API have quota calculation issues?
-    + Quota = Group multiplier * Model multiplier * (number of prompt tokens + number of completion tokens * completion multiplier)
-    + The completion multiplier is fixed at 1.33 for GPT3.5 and 2 for GPT4, consistent with the official definition.
-    + If it is not a stream mode, the official API will return the total number of tokens consumed. However, please note that the consumption multipliers for prompts and completions are different.
-2. Why does it prompt "insufficient quota" even though my account balance is sufficient?
-    + Please check if your token quota is sufficient. It is separate from the account balance.
-    + The token quota is used to set the maximum usage and can be freely set by the user.
-3. It says "No available channels" when trying to use a channel. What should I do?
-    + Please check the user and channel group settings.
-    + Also check the channel model settings.
-4. Channel testing reports an error: "invalid character '<' looking for beginning of value"
-    + This error occurs when the returned value is not valid JSON but an HTML page.
-    + Most likely, the IP of your deployment site or the node of the proxy has been blocked by CloudFlare.
-5. ChatGPT Next Web reports an error: "Failed to fetch"
-    + Do not set `BASE_URL` during deployment.
-    + Double-check that your interface address and API Key are correct.
+1. What is quota? How is it calculated? Is there an issue with One API's quota calculation?
+   + Quota = Group Rate * Model Rate * (Prompt token count + Completion token count * Completion multiplier)
+   + The completion multiplier is fixed at 1.33 for GPT3.5 and 2 for GPT4, consistent with the official values.
+   + If it's not a streaming mode, the official API will return the total number of tokens consumed, but note that the prompt and completion have different consumption multipliers.
+2. Why does it show insufficient quota when my account has enough quota?
+   + Please check if your token quota is sufficient; this is separate from your account quota.
+   + The token quota is only used to set the maximum usage limit and can be freely adjusted by users.
+3. Why does it say "No available channel" for prompts?
+   + Please check your user group and channel group settings.
+   + Also, check the model settings for the channels.
+4. Error in channel testing: `invalid character '<' looking for beginning of value`
+   + This error occurs because the returned value is not a valid JSON but an HTML page.
+   + Most likely, your deployment IP or proxy node has been blocked by CloudFlare.
+5. Error in ChatGPT Next Web: `Failed to fetch`
+   + During deployment, do not set `BASE_URL`.
+   + Check if you have entered the correct API endpoint and API key.
+6. Error: "The current group load is saturated. Please try again later."
+   + The upstream channel has reached its limit of 429 requests.
+
 
 ## Related Projects
 [FastGPT](https://github.com/c121914yu/FastGPT): Build an AI knowledge base in three minutes
